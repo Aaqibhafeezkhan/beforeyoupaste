@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BeforeYouPaste</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="mark">&#128737;</div>
+    <div>
+      <h1>BeforeYouPaste</h1>
+      <p class="tagline">Local-only PII and secrets shield</p>
+    </div>
+  </header>
+
+  <section class="status-card">
+    <p class="status-line"><span id="statusDot" class="dot on"></span><span id="statusText">Shield on</span></p>
+    <p class="vault-line"><strong id="vaultCount">0</strong> values protected in your Vault</p>
+    <p class="hint">Values never leave this browser. No network requests, ever.</p>
+  </section>
+
+  <div class="actions">
+    <button id="openVault" class="primary">Open Vault</button>
+    <button id="toggleEnabled" class="secondary">Turn off</button>
+    <button id="clearVault" class="danger">Clear Vault</button>
+  </div>
+
+  <footer>Works on ChatGPT, Claude, Gemini and Perplexity.</footer>
+  <script src="popup.js"></script>
+</body>
+</html>

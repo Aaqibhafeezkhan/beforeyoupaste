@@ -1,0 +1,50 @@
+:root {
+  --navy: #0b1f3a;
+  --navy-2: #12294d;
+  --gold: #c9a227;
+  --gold-bright: #f5c542;
+  --text: #eef2f8;
+  --muted: #9db1cc;
+  --danger: #e0655f;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 320px;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  padding: 16px;
+}
+header { display: flex; gap: 12px; align-items: center; }
+.mark {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--navy-2); border: 1px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
+.tagline { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.status-card {
+  margin-top: 14px; background: var(--navy-2);
+  border: 1px solid rgba(201, 162, 39, 0.35); border-radius: 12px;
+  padding: 12px 14px;
+}
+.status-line { margin: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #8a97a8; display: inline-block; }
+.dot.on { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.8); }
+.vault-line { margin: 8px 0 0; font-size: 13px; }
+.vault-line strong { color: var(--gold-bright); font-size: 16px; }
+.hint { margin: 6px 0 0; font-size: 11.5px; color: var(--muted); }
+.actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+button {
+  border-radius: 10px; padding: 10px 12px; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent;
+}
+button.primary { background: var(--gold); color: var(--navy); }
+button.primary:hover { background: var(--gold-bright); }
+button.secondary { background: transparent; color: var(--text); border-color: rgba(238, 242, 248, 0.35); }
+button.secondary:hover { border-color: var(--gold); }
+button.danger { background: transparent; color: var(--danger); border-color: rgba(224, 101, 95, 0.5); }
+button.danger:hover { background: rgba(224, 101, 95, 0.12); }
+footer { margin-top: 12px; font-size: 11px; color: var(--muted); text-align: center; }

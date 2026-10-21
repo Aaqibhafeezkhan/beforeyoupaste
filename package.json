@@ -1,0 +1,1 @@
+{"description":"Reversible, local-only PII and secrets shield for AI chats.","license":"MIT","name":"beforeyoupaste","private":true,"scripts":{"test":"node tests/detectors.test.js"},"version":"1.0.0"}

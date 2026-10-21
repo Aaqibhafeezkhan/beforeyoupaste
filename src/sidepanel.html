@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BeforeYouPaste Vault</title>
+<link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header>
+    <h1>&#128737; The Vault</h1>
+    <p>Placeholder mappings live only in this browser, in chrome.storage.local. Nothing is sent anywhere.</p>
+  </header>
+
+  <section class="toolbar">
+    <button id="exportBtn" class="secondary">Export JSON</button>
+    <label class="import-label">Import JSON
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
+    </label>
+    <button id="clearAll" class="danger">Clear all</button>
+  </section>
+
+  <p id="emptyState" class="empty">Your Vault is empty. Paste something sensitive into an AI chat and choose the masked paste. Its placeholder will appear here.</p>
+  <ul id="entries" class="entries"></ul>
+
+  <section class="policies">
+    <h2>Per-type policy</h2>
+    <p class="hint">Warn asks before masking. Block stops the paste. Allow lets that type through untouched.</p>
+    <div id="policyList"></div>
+  </section>
+
+  <script src="detectors.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
