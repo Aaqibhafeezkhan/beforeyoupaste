@@ -1,5 +1,11 @@
 # BeforeYouPaste
 
+![Stars](https://img.shields.io/github/stars/aamirtechs/beforeyoupaste?style=flat&color=C9A227)
+![Forks](https://img.shields.io/github/forks/aamirtechs/beforeyoupaste?style=flat&color=0D1F3C)
+![Issues](https://img.shields.io/github/issues/aamirtechs/beforeyoupaste?style=flat)
+![Local only](https://img.shields.io/badge/Local%20only-Zero%20network%20requests-1DBF73?style=flat)
+![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat)
+
 **Paste into AI chats without handing over the real data.**
 
 BeforeYouPaste is a free, open source Chrome extension that catches personal data and secrets in your text *before* they reach ChatGPT, Claude, Gemini or Perplexity, swaps them for placeholders like `<EMAIL_1>` and `<API_KEY_1>`, and restores the real values in the AI reply with one click. Everything runs locally. The extension makes zero network requests.
