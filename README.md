@@ -43,6 +43,7 @@ Once text is sent, it is out of your hands. Redaction tools that replace values 
 | Core | Email, US phone, SSN (with invalid range checks), credit cards (Luhn check), IBAN (mod-97 check), IPv4 addresses, US street addresses, internal and private URLs (localhost, .local, RFC 1918 links) |
 | Developer | OpenAI and Anthropic style API keys (`sk-...`), AWS access keys (`AKIA...`), GitHub tokens (`ghp_`, `github_pat_`), Slack tokens (`xox...`), JWTs, and `.env` style secrets (`PASSWORD=...`, `API_KEY=...`) |
 | Logistics | US DOT numbers, MC numbers, VINs (with check digit validation), BOL and PRO numbers, container numbers |
+| India | Aadhaar numbers with Verhoeff checksum validation, supporting plain and 4-4-4 spaced formats |
 
 Validators matter. A 16 digit number that fails the Luhn check is not flagged as a card, an IBAN that fails mod-97 is left alone, and SSNs in invalid ranges (000, 666, 900 to 999) are rejected. Fewer false alarms means you keep the shield on.
 

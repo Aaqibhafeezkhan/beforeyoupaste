@@ -148,6 +148,40 @@ test('container number detected (logistics pack)', () => {
   assert.ok(hasType('Container MSKU1234567 loaded', 'CONTAINER'));
 });
 
+test('Aadhaar valid samples detected in plain and 4-4-4 formats (India pack)', () => {
+  assert.ok(hasType('UIDAI sandbox test UID 999941057058 is valid', 'AADHAAR', { packs: ['india'] }));
+  assert.ok(hasType('Synthetic Aadhaar 2341 2341 2346 is valid', 'AADHAAR', { packs: ['india'] }));
+  assert.ok(hasType('Synthetic Aadhaar 234123412346 is valid', 'AADHAAR', { packs: ['india'] }));
+  assert.strictEqual(D.validators.verhoeffValid('999941057058'), true);
+  assert.strictEqual(D.validators.aadhaarValid('2341 2341 2346'), true);
+});
+
+test('Aadhaar altered check digit and invalid prefixes are rejected', () => {
+  assert.ok(!hasType('UID 999941057059', 'AADHAAR', { packs: ['india'] }));
+  assert.ok(!hasType('UID 234123412347', 'AADHAAR', { packs: ['india'] }));
+  assert.ok(!hasType('UID 034123412346', 'AADHAAR', { packs: ['india'] }));
+  assert.ok(!hasType('UID 134123412346', 'AADHAAR', { packs: ['india'] }));
+  assert.strictEqual(D.validators.verhoeffValid('999941057059'), false);
+  assert.strictEqual(D.validators.aadhaarValid('034123412346'), false);
+  assert.strictEqual(D.validators.aadhaarValid('134123412346'), false);
+});
+
+test('Aadhaar masking and restoration preserve the original text', () => {
+  const original = 'Aadhaar 9999 4105 7058 and synthetic 234123412346.';
+  const masked = D.mask(original, null, { packs: ['india'] });
+  assert.ok(!masked.text.includes('9999 4105 7058'));
+  assert.ok(!masked.text.includes('234123412346'));
+  assert.ok(masked.text.includes('<AADHAAR_1>'));
+  assert.ok(masked.text.includes('<AADHAAR_2>'));
+  assert.strictEqual(D.restore(masked.text, masked.map), original);
+});
+
+test('Aadhaar detector ignores wrong spacing and ordinary text', () => {
+  assert.ok(!hasType('UID 2341 23412346', 'AADHAAR', { packs: ['india'] }));
+  assert.ok(!hasType('The India team meets at 10 in the morning.', 'AADHAAR', { packs: ['india'] }));
+  assert.deepStrictEqual(types('UID 999941057058', { packs: ['core'] }), []);
+});
+
 test('packs can be selected', () => {
   assert.deepStrictEqual(types('Carrier USDOT 1234567 checked', { packs: ['core'] }), []);
   assert.ok(hasType('Carrier USDOT 1234567 checked', 'USDOT', { packs: ['logistics'] }));

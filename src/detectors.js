@@ -53,6 +53,43 @@
     return true;
   }
 
+  var VERHOEFF_D = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    [1, 2, 3, 4, 0, 6, 7, 8, 9, 5],
+    [2, 3, 4, 0, 1, 7, 8, 9, 5, 6],
+    [3, 4, 0, 1, 2, 8, 9, 5, 6, 7],
+    [4, 0, 1, 2, 3, 9, 5, 6, 7, 8],
+    [5, 9, 8, 7, 6, 0, 4, 3, 2, 1],
+    [6, 5, 9, 8, 7, 1, 0, 4, 3, 2],
+    [7, 6, 5, 9, 8, 2, 1, 0, 4, 3],
+    [8, 7, 6, 5, 9, 3, 2, 1, 0, 4],
+    [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  ];
+  var VERHOEFF_P = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    [1, 5, 7, 6, 2, 8, 3, 0, 9, 4],
+    [5, 8, 0, 3, 7, 9, 6, 1, 4, 2],
+    [8, 9, 1, 6, 0, 4, 3, 5, 2, 7],
+    [9, 4, 5, 3, 1, 2, 6, 8, 7, 0],
+    [4, 2, 8, 6, 5, 7, 3, 9, 0, 1],
+    [2, 7, 9, 3, 8, 0, 6, 4, 1, 5],
+    [7, 0, 4, 6, 9, 1, 3, 2, 5, 8]
+  ];
+  function verhoeffValid(value) {
+    if (typeof value !== 'string' || !/^\d+$/.test(value)) return false;
+    var checksum = 0;
+    for (var i = 0; i < value.length; i++) {
+      var digit = value.charCodeAt(value.length - 1 - i) - 48;
+      checksum = VERHOEFF_D[checksum][VERHOEFF_P[i % 8][digit]];
+    }
+    return checksum === 0;
+  }
+
+  function aadhaarValid(raw) {
+    var digits = raw.replace(/\s/g, '');
+    return /^[2-9]\d{11}$/.test(digits) && verhoeffValid(digits);
+  }
+
   var VIN_VALUES = {
     A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7, H: 8, J: 1, K: 2, L: 3, M: 4,
     N: 5, P: 7, R: 9, S: 2, T: 3, U: 4, V: 5, W: 6, X: 7, Y: 8, Z: 9,
@@ -153,6 +190,9 @@
       patterns.forEach(function (re) { all = all.concat(findAll(t, re, 'INTERNAL_URL')); });
       return all;
     } },
+    { name: 'aadhaar', type: 'AADHAAR', priority: 3, run: function (t) {
+      return findAll(t, /\b(?:[2-9]\d{11}|[2-9]\d{3} \d{4} \d{4})\b/g, 'AADHAAR', aadhaarValid);
+    } },
     { name: 'iban', type: 'IBAN', priority: 3, run: function (t) {
       var a = findAll(t, /\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?\d{1,3})?\b/g, 'IBAN', ibanValid);
       var b = findAll(t, /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g, 'IBAN', ibanValid);
@@ -238,6 +278,11 @@
       description: 'Credentials developers paste by accident: API keys, JWTs, dot env secrets, AWS keys, GitHub and Slack tokens.',
       detectors: ['apiKey', 'awsKey', 'githubToken', 'slackToken', 'jwt', 'secret']
     },
+    india: {
+      label: 'India',
+      description: 'Indian identity numbers: Aadhaar with Verhoeff checksum validation.',
+      detectors: ['aadhaar']
+    },
     logistics: {
       label: 'Logistics',
       description: 'US trucking identifiers: USDOT and MC numbers, VINs, BOL and PRO numbers, container numbers.',
@@ -251,7 +296,7 @@
     API_KEY: 'API key', AWS_KEY: 'AWS access key', GITHUB_TOKEN: 'GitHub token',
     SLACK_TOKEN: 'Slack token', JWT: 'JWT', SECRET: 'Secret value',
     INTERNAL_URL: 'Internal URL', USDOT: 'US DOT number', MC: 'MC number',
-    VIN: 'VIN', BOL: 'BOL or PRO number', CONTAINER: 'Container number'
+    VIN: 'VIN', AADHAAR: 'Aadhaar number', BOL: 'BOL or PRO number', CONTAINER: 'Container number'
   };
 
   function detectorNamesForPacks(packNames) {
@@ -359,7 +404,7 @@
     restore: restore,
     PACKS: PACKS,
     TYPE_LABELS: TYPE_LABELS,
-    validators: { luhnValid: luhnValid, ibanValid: ibanValid, ssnValid: ssnValid, vinValid: vinValid }
+    validators: { luhnValid: luhnValid, ibanValid: ibanValid, ssnValid: ssnValid, vinValid: vinValid, verhoeffValid: verhoeffValid, aadhaarValid: aadhaarValid }
   };
 
   if (typeof module !== 'undefined' && module.exports) {
