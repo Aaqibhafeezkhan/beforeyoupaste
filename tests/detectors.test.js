@@ -25,6 +25,33 @@ test('US phone formats detected', () => {
   assert.ok(hasType('Call +1 212.555.0147 today', 'PHONE'));
 });
 
+test('labelled dates of birth detected in all supported formats', () => {
+  assert.ok(hasType('DOB: 03/14/1990', 'DOB', { packs: ['core'] }));
+  assert.ok(hasType('Date of birth: 14 March 1990', 'DOB', { packs: ['core'] }));
+  assert.ok(hasType('Born: 1990-03-14', 'DOB', { packs: ['core'] }));
+});
+
+test('impossible and implausible dates of birth are rejected', () => {
+  assert.ok(!hasType('DOB: 02/30/1990', 'DOB', { packs: ['core'] }));
+  assert.ok(!hasType('Date of birth: 31 April 1990', 'DOB', { packs: ['core'] }));
+  assert.ok(!hasType('Born: 1899-03-14', 'DOB', { packs: ['core'] }));
+  assert.ok(!hasType('DOB: 03/14/2999', 'DOB', { packs: ['core'] }));
+  assert.strictEqual(D.validators.dobValid('02/29/2000'), true);
+  assert.strictEqual(D.validators.dobValid('02/29/1900'), false);
+});
+
+test('date of birth masking replaces only the labelled date and restores it', () => {
+  const original = 'DOB: 03/14/1990, employee record';
+  const masked = D.mask(original, null, { packs: ['core'] });
+  assert.strictEqual(masked.text, 'DOB: <DOB_1>, employee record');
+  assert.strictEqual(D.restore(masked.text, masked.map), original);
+  assert.strictEqual(masked.map['<DOB_1>'], '03/14/1990');
+});
+
+test('bare unlabelled dates are not detected as dates of birth', () => {
+  assert.deepStrictEqual(types('The meeting is on 03/14/1990 and the report is due tomorrow.', { packs: ['core'] }), []);
+});
+
 test('SSN valid detected', () => {
   assert.ok(hasType('SSN is 123-45-6789 on file', 'SSN'));
 });

@@ -4,6 +4,7 @@ All notable changes to BeforeYouPaste are documented here. The format follows Ke
 
 ## [Unreleased]
 
+* Core detector: labelled dates of birth with real-date and year validation. Only the date value is masked.
 * India detector pack: Aadhaar numbers with Verhoeff checksum validation in plain and 4-4-4 spaced formats.
 
 ## [1.0.0] - 2026-10-21

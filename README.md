@@ -40,7 +40,7 @@ Once text is sent, it is out of your hands. Redaction tools that replace values 
 
 | Pack | What it catches |
 | --- | --- |
-| Core | Email, US phone, SSN (with invalid range checks), credit cards (Luhn check), IBAN (mod-97 check), IPv4 addresses, US street addresses, internal and private URLs (localhost, .local, RFC 1918 links) |
+| Core | Email, US phone, labelled dates of birth (validated calendar dates), SSN (with invalid range checks), credit cards (Luhn check), IBAN (mod-97 check), IPv4 addresses, US street addresses, internal and private URLs (localhost, .local, RFC 1918 links) |
 | Developer | OpenAI and Anthropic style API keys (`sk-...`), AWS access keys (`AKIA...`), GitHub tokens (`ghp_`, `github_pat_`), Slack tokens (`xox...`), JWTs, and `.env` style secrets (`PASSWORD=...`, `API_KEY=...`) |
 | Logistics | US DOT numbers, MC numbers, VINs (with check digit validation), BOL and PRO numbers, container numbers |
 | India | Aadhaar numbers with Verhoeff checksum validation, supporting plain and 4-4-4 spaced formats |

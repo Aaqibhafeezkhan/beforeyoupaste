@@ -42,6 +42,39 @@
     return remainder === 1;
   }
 
+  function dobValid(value) {
+    if (typeof value !== 'string') return false;
+    var year;
+    var month;
+    var day;
+    var match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (match) {
+      month = Number(match[1]);
+      day = Number(match[2]);
+      year = Number(match[3]);
+    } else {
+      match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (match) {
+        year = Number(match[1]);
+        month = Number(match[2]);
+        day = Number(match[3]);
+      } else {
+        match = value.match(/^(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})$/i);
+        if (!match) return false;
+        day = Number(match[1]);
+        month = ['january', 'february', 'march', 'april', 'may', 'june',
+          'july', 'august', 'september', 'october', 'november', 'december']
+          .indexOf(match[2].toLowerCase()) + 1;
+        year = Number(match[3]);
+      }
+    }
+    if (year < 1900 || year > new Date().getFullYear()) return false;
+    var date = new Date(Date.UTC(year, month - 1, day));
+    return date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day;
+  }
+
   function ssnValid(v) {
     var parts = v.split('-');
     var area = parseInt(parts[0], 10);
@@ -203,6 +236,18 @@
         return luhnValid(v.replace(/[- ]/g, ''));
       });
     } },
+    { name: 'dateOfBirth', type: 'DOB', priority: 3, run: function (t) {
+      return findAll(
+        t,
+        /\b(?:DOB|D\.O\.B\.|Date\s+of\s+birth|Born)\s*(?::|=)?\s*(\d{2}\/\d{2}\/\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})\b/gi,
+        'DOB',
+        dobValid,
+        function (m) {
+          var value = m[1];
+          return { value: value, offset: m[0].lastIndexOf(value) };
+        }
+      );
+    } },
     { name: 'ssn', type: 'SSN', priority: 3, run: function (t) {
       return findAll(t, /\b\d{3}-\d{2}-\d{4}\b/g, 'SSN', ssnValid);
     } },
@@ -270,8 +315,8 @@
   var PACKS = {
     core: {
       label: 'Core',
-      description: 'Everyday personal data: email, phone, SSN, cards, IBAN, IP addresses, street addresses, internal URLs.',
-      detectors: ['email', 'phone', 'ssn', 'card', 'iban', 'ipv4', 'address', 'internalUrl']
+      description: 'Everyday personal data: email, phone, labelled dates of birth, SSN, cards, IBAN, IP addresses, street addresses, internal URLs.',
+      detectors: ['email', 'phone', 'ssn', 'card', 'iban', 'ipv4', 'address', 'internalUrl', 'dateOfBirth']
     },
     developer: {
       label: 'Developer',
@@ -291,7 +336,7 @@
   };
 
   var TYPE_LABELS = {
-    EMAIL: 'Email', PHONE: 'US phone', SSN: 'SSN', CARD: 'Credit card',
+    EMAIL: 'Email', PHONE: 'US phone', SSN: 'SSN', DOB: 'Date of birth', CARD: 'Credit card',
     IBAN: 'IBAN', IP: 'IP address', ADDRESS: 'Street address',
     API_KEY: 'API key', AWS_KEY: 'AWS access key', GITHUB_TOKEN: 'GitHub token',
     SLACK_TOKEN: 'Slack token', JWT: 'JWT', SECRET: 'Secret value',
@@ -404,7 +449,7 @@
     restore: restore,
     PACKS: PACKS,
     TYPE_LABELS: TYPE_LABELS,
-    validators: { luhnValid: luhnValid, ibanValid: ibanValid, ssnValid: ssnValid, vinValid: vinValid, verhoeffValid: verhoeffValid, aadhaarValid: aadhaarValid }
+    validators: { luhnValid: luhnValid, ibanValid: ibanValid, ssnValid: ssnValid, dobValid: dobValid, vinValid: vinValid, verhoeffValid: verhoeffValid, aadhaarValid: aadhaarValid }
   };
 
   if (typeof module !== 'undefined' && module.exports) {
