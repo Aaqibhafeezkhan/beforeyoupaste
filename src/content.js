@@ -108,9 +108,12 @@
   function summarizeCounts(findings) {
     var counts = {};
     var labels = (lib() && lib().TYPE_LABELS) || {};
-    findings.forEach(function (f) { counts[f.type] = (counts[f.type] || 0) + 1; });
-    return Object.keys(counts).map(function (type) {
-      return counts[type] + ' x ' + (labels[type] || type);
+    findings.forEach(function (f) {
+      var label = f.label || labels[f.type] || f.type;
+      counts[label] = (counts[label] || 0) + 1;
+    });
+    return Object.keys(counts).map(function (label) {
+      return counts[label] + ' x ' + label;
     }).join(', ');
   }
 

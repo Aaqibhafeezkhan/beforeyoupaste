@@ -4,6 +4,7 @@ All notable changes to BeforeYouPaste are documented here. The format follows Ke
 
 ## [Unreleased]
 
+* IBAN detection: enforce country-specific lengths for DE, FR, GB, ES, IT and NL, and show the country in finding labels while retaining the IBAN placeholder type.
 * India detector pack: Aadhaar numbers with Verhoeff checksum validation in plain and 4-4-4 spaced formats.
 
 ## [1.0.0] - 2026-10-21

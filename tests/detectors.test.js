@@ -59,6 +59,47 @@ test('IBAN invalid rejected', () => {
   assert.strictEqual(D.validators.ibanValid('GB29NWBK60161331926820'), false);
 });
 
+test('IBAN country-specific lengths accept valid samples for DE, FR, GB, ES, IT and NL', () => {
+  const samples = [
+    ['DE', 'DE89370400440532013000'], ['FR', 'FR1420041010050500013M02606'],
+    ['GB', 'GB82WEST12345698765432'], ['ES', 'ES9121000418450200051332'],
+    ['IT', 'IT60X0542811101000000123456'], ['NL', 'NL91ABNA0417164300']
+  ];
+  samples.forEach(([country, iban]) => {
+    assert.strictEqual(iban.length, { DE: 22, FR: 27, GB: 22, ES: 24, IT: 27, NL: 18 }[country]);
+    assert.strictEqual(D.validators.ibanValid(iban), true, country + ' sample should be valid');
+    assert.ok(hasType('Account ' + iban + ' verified', 'IBAN'));
+  });
+});
+
+test('IBAN country-specific wrong lengths are rejected even with a valid mod-97 checksum', () => {
+  function withChecksum(country, bban) {
+    const rearranged = bban + country + '00';
+    let remainder = 0;
+    for (const char of rearranged) {
+      const digits = char >= 'A' && char <= 'Z' ? String(char.charCodeAt(0) - 55) : char;
+      for (const digit of digits) remainder = (remainder * 10 + Number(digit)) % 97;
+    }
+    return country + String(98 - remainder).padStart(2, '0') + bban;
+  }
+  const lengths = { DE: 22, FR: 27, GB: 22, ES: 24, IT: 27, NL: 18 };
+  Object.keys(lengths).forEach((country) => {
+    const wrongLength = withChecksum(country, 'A'.repeat(lengths[country] - 5));
+    assert.strictEqual(wrongLength.length, lengths[country] - 1);
+    assert.strictEqual(D.validators.ibanValid(wrongLength), false, country + ' wrong length should be rejected');
+    assert.ok(!hasType('Account ' + wrongLength + ' on file', 'IBAN'));
+  });
+});
+
+test('IBAN findings include a country label while retaining the IBAN placeholder type', () => {
+  const finding = D.detect('Pay GB82WEST12345698765432 now').find((item) => item.type === 'IBAN');
+  assert.strictEqual(finding.label, 'IBAN (United Kingdom)');
+  const original = 'Pay GB82WEST12345698765432 now';
+  const masked = D.mask(original);
+  assert.ok(masked.text.includes('<IBAN_1>'));
+  assert.strictEqual(D.restore(masked.text, masked.map), original);
+});
+
 test('IPv4 detected and invalid octet rejected', () => {
   assert.ok(hasType('Server at 8.8.8.8 is up', 'IP'));
   assert.ok(!hasType('Server at 999.8.8.8 is up', 'IP'));

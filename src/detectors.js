@@ -24,10 +24,18 @@
     return digits.length >= 13 && sum % 10 === 0;
   }
 
+  var IBAN_COUNTRY_LENGTHS = { DE: 22, FR: 27, GB: 22, ES: 24, IT: 27, NL: 18 };
+  var IBAN_COUNTRY_NAMES = {
+    DE: 'Germany', FR: 'France', GB: 'United Kingdom',
+    ES: 'Spain', IT: 'Italy', NL: 'Netherlands'
+  };
+
   function ibanValid(raw) {
     var iban = raw.replace(/\s+/g, '').toUpperCase();
     if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban)) return false;
     if (iban.length < 15 || iban.length > 34) return false;
+    var expectedLength = IBAN_COUNTRY_LENGTHS[iban.slice(0, 2)];
+    if (expectedLength && iban.length !== expectedLength) return false;
     var rearranged = iban.slice(4) + iban.slice(0, 4);
     var remainder = 0;
     for (var i = 0; i < rearranged.length; i++) {
@@ -196,7 +204,12 @@
     { name: 'iban', type: 'IBAN', priority: 3, run: function (t) {
       var a = findAll(t, /\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?\d{1,3})?\b/g, 'IBAN', ibanValid);
       var b = findAll(t, /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g, 'IBAN', ibanValid);
-      return a.concat(b);
+      var findings = a.concat(b);
+      findings.forEach(function (finding) {
+        var countryName = IBAN_COUNTRY_NAMES[finding.value.replace(/\s+/g, '').slice(0, 2).toUpperCase()];
+        if (countryName) finding.label = 'IBAN (' + countryName + ')';
+      });
+      return findings;
     } },
     { name: 'card', type: 'CARD', priority: 3, run: function (t) {
       return findAll(t, /\b(?:\d{4}[- ]){3}\d{4}\b|\b\d{13,19}\b/g, 'CARD', function (v) {
@@ -334,7 +347,9 @@
     var lastEnd = -1;
     all.forEach(function (r) {
       if (r.start >= lastEnd) {
-        kept.push({ type: r.type, value: r.value, start: r.start, end: r.end });
+        var finding = { type: r.type, value: r.value, start: r.start, end: r.end };
+        if (r.label) finding.label = r.label;
+        kept.push(finding);
         lastEnd = r.end;
       }
     });
